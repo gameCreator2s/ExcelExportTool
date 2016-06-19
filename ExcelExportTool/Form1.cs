@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml;
+using System.IO;
 
 namespace ExcelExportTool
 {
@@ -21,7 +23,11 @@ namespace ExcelExportTool
             this.MaximizeBox = false;
 
             Screen scr = Screen.PrimaryScreen;
-            this.Size = new Size(scr.Bounds.Width/2,scr.Bounds.Height/2);
+
+            int width = scr.Bounds.Width / 2>900?scr.Bounds.Width/2:900;
+            int height = scr.Bounds.Height / 2 / 2 > 500 ? scr.Bounds.Height / 2 : 500;
+
+            this.Size = new Size(width,height);
             this.StartPosition = FormStartPosition.CenterScreen;
             this.Text = "Excel翻译表导出";
             //0
@@ -52,7 +58,10 @@ namespace ExcelExportTool
             //listbox.Location = new Point(24, 50);
             //listbox.Size = new Size(300, 300);
             //this.Controls.Add(listbox);
-            string[] translatetype = new string[] { "ch", "en", "ru", "ls", "ch", "en", "ru", "ls" };
+            //string[] translatetype = new string[] { "ch", "en", "ru", "ls", "ch", "en", "ru", "ls" };
+            //List<string> translatetype = new List<string>();
+            //parseXml(ref translatetype);
+
             //3
             GroupBox gbox = new GroupBox();
             gbox.Location = new Point(24, 100);
@@ -64,18 +73,19 @@ namespace ExcelExportTool
             label_bg.Text = "选择要添加的语言种类";
             gbox.Controls.Add(label_bg);
 
-            int preIndex = 0;
-            int curIndex = 0;
-            for (int i = 0; i < translatetype.Length; i++) {
-                CheckBox cbox = new CheckBox();
-                curIndex++;
-                if (curIndex % 2 == 0)
-                    preIndex++;
-                cbox.Location = new Point(24+i%2*50, 50+preIndex*30);
-                cbox.Size = new Size(200, 30);
-                cbox.Text = translatetype[i];
-                gbox.Controls.Add(cbox);
-            }
+            //int preIndex = 0;
+            //int curIndex = 0;
+            //for (int i = 0; i < translatetype.Count; i++)
+            //{
+            //    CheckBox cbox = new CheckBox();
+            //    curIndex++;
+            //    if (curIndex % 2 == 0)
+            //        preIndex++;
+            //    cbox.Location = new Point(24 + i % 2 * 50, 50 + preIndex * 30);
+            //    cbox.Size = new Size(200, 30);
+            //    cbox.Text = translatetype[i];
+            //    gbox.Controls.Add(cbox);
+            //}
 
             this.Controls.Add(gbox);
             //4
@@ -137,7 +147,93 @@ namespace ExcelExportTool
             btn_filter.Text = "选择过滤目录路径";
             this.Controls.Add(btn_filter);
             btn_filter.Click += btn_filter_Click;
+
+            //12
+            Label label_lan = new Label();
+            label_lan.Location = new Point(24, 360);
+            label_lan.Size = new Size(500, 20);
+            label_lan.Text = "请选择语言配置文件";
+            this.Controls.Add(label_lan);
+
+            //13
+            TextBox txtbox_lan = new TextBox();
+            txtbox_lan.Location = new Point(24, 380);
+            txtbox_lan.Size = new Size(500, 20);
+            txtbox_lan.Text = @"";
+            this.Controls.Add(txtbox_lan);
+
+            //14
+            Button btn_lan = new Button();
+            btn_lan.Location = new Point(530, 380);
+            btn_lan.Size = new Size(130, 20);
+            btn_lan.Text = "选择语言配置路径";
+            this.Controls.Add(btn_lan);
+            btn_lan.Click += btn_lan_Click;
             
+        }
+
+
+        //-------------------------------------------------------------
+
+        void UpdateTranslationType()
+        {
+            GroupBox gbox = this.Controls[3] as GroupBox;
+            TextBox txtbox = this.Controls[13] as TextBox;
+            List<string> translatetype = new List<string>();
+            if (!parseXml(ref translatetype, txtbox.Text)) {
+                return;
+            }
+
+            int preIndex = 0;
+            int curIndex = 0;
+            for (int i = 0; i < translatetype.Count; i++)
+            {
+                CheckBox cbox = new CheckBox();
+                curIndex++;
+                if (curIndex % 2 == 0)
+                    preIndex++;
+                cbox.Location = new Point(24 + i % 2 * 50, 50 + preIndex * 30);
+                cbox.Size = new Size(200, 30);
+                cbox.Text = translatetype[i];
+                cbox.Checked = true;
+                gbox.Controls.Add(cbox);
+            }
+        }
+
+        void btn_lan_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openfile = new OpenFileDialog();
+            DialogResult result = openfile.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                TextBox txtbox = this.Controls[13] as TextBox;
+                txtbox.Text = openfile.FileName;
+                UpdateTranslationType();
+            }
+        }
+
+        bool parseXml(ref List<string> list, string xmlpath)
+        {
+            if (!File.Exists(xmlpath))
+            {
+                ShowTips("不存在" + xmlpath + "此xml文件");
+                return false;
+            }
+            FileInfo fi = new FileInfo(xmlpath);
+            if (fi.Extension != ".xml" || fi.Name != "language.xml") {
+                ShowTips(xmlpath + "不是翻译类型的xml配置文件");
+                return false;
+            }
+            list.Clear();
+            XmlDocument xmldoc = new XmlDocument();
+            xmldoc.Load(xmlpath);//@"..\..\..\language.xml"
+            XmlElement root = xmldoc.DocumentElement;
+            XmlNodeList listnodes = root.SelectNodes("/languagetype/language/type");
+            foreach (XmlNode node in listnodes)
+            {
+                list.Add(node.InnerText);
+            }
+            return true;
         }
 
         /// <summary>
@@ -179,8 +275,9 @@ namespace ExcelExportTool
             }
             TextBox txtbox_filter=this.Controls[10] as TextBox;
             //string[] translateTypeArr = translateType.ToArray();
-            ExportExcel.Export(txtbox.Text, translateType.ToArray(), txtbox_filter.Text);
-            ShowTips("导出完成");
+            if(ExportExcel.Export(txtbox.Text, translateType.ToArray(), txtbox_filter.Text)){
+                ShowTips("导出完成");
+            }
         }
 
         /// <summary>
@@ -191,8 +288,10 @@ namespace ExcelExportTool
         void btn_translate_Del(object sender, EventArgs e)
         {
             TextBox txtbox = this.Controls[7] as TextBox;
-            ExportExcel.DelTranslate(txtbox.Text);
-            ShowTips("删除完成");
+            if (ExportExcel.DelTranslate(txtbox.Text))
+            {
+                ShowTips("删除完成");
+            }
         }
 
         /// <summary>

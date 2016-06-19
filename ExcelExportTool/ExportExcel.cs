@@ -40,8 +40,12 @@ namespace ExcelExportTool
             }
         }
 
-        public static void Export(string rootPath, string[] transTypeList = null,string filterPath=null)
+        public static bool Export(string rootPath, string[] transTypeList = null,string filterPath=null)
         {
+            if (!Directory.Exists(rootPath)) {
+                Form1.ShowTips("不存在" + rootPath + "此目录");
+                return false;
+            }
             transTypeList = transTypeList == null ? new string[] { "ch" } : transTypeList;
             rootPath = rootPath == "" ? @"E:\zzhx\trunk\data\ai" : rootPath;
             filterFolderList.Clear();
@@ -59,7 +63,7 @@ namespace ExcelExportTool
                 excelFile = new FileInfo(pathLists[i]);
                 if (!excelFile.Exists)
                     continue;
-                //record the col num which to be exported;
+                //record the col num which to be exported;be sure the first value is id
                 List<int> collist = new List<int>();
                 using (ExcelPackage package = new ExcelPackage(excelFile))//每一个原excel
                 {
@@ -77,21 +81,21 @@ namespace ExcelExportTool
                         for (int col = colStart; col <= colEnd; col++)
                         {
                             string text = worksheet.Cells[row, col].Text;
-                            if (text == "id" || text == "ID" || text.Contains("删"))
+                            if (text == "id" || text == "ID")
                             {
                                 if (!collist.Contains(col))
                                 {
                                     collist.Add(col);
                                 }
-                                //记录正文开始行
-                                if (text.Contains("删"))
-                                {
-                                    //删所在行的下一行为正文开始行
-                                    workRow = row + 1;
-                                }
                                 break;
                             }
-
+                            //记录正文开始行
+                            if (text.Contains("删"))
+                            {
+                                //删所在行的下一行为正文开始行
+                                workRow = row + 1;
+                                break;
+                            }
                             MatchCollection mc = Regex.Matches(text, pattern, RegexOptions.IgnoreCase);
                             if (mc.Count > 0)
                             {
@@ -122,6 +126,7 @@ namespace ExcelExportTool
                             translateIdList.Clear();
                             translate2AddIdList.Clear();
                             translate2DelIdList.Clear();
+                            //origin id
                             for (int row = workRow; row <= rowEnd; row++)
                             {
                                 if (worksheet.Cells[row, collist[0]].Value != null) {
@@ -130,14 +135,17 @@ namespace ExcelExportTool
 
                                 }
                             }
-
+                            //translation excel maybe 对不上 origin excel's col 编号  so origin and translation excel should
+                            //use own row/col data
                             transRowEnd = workshee2.Dimension.End.Row;
+                            transColStart = workshee2.Dimension.Start.Column;
+                            transColEnd = workshee2.Dimension.End.Column;
                             for (int row = workRow; row <= transRowEnd; row++)
                             {
-                                if (workshee2.Cells[row, collist[0]].Value != null) {
-                                    translateIdList.Add((double)workshee2.Cells[row, collist[0]].Value);
+                                if (workshee2.Cells[row, transColStart].Value != null)
+                                {
+                                    translateIdList.Add((double)workshee2.Cells[row, transColStart].Value);
                                     //translateIdList.Add(workshee2.Cells[row, collist[0]].Value.ToString());
-
                                 }
                             }
                             //比对origin 有 而translate无的
@@ -275,7 +283,8 @@ namespace ExcelExportTool
 
                 };
             }
-            Console.Read();
+            //Console.Read();
+            return true;
         }
 
         static void TraverseFile(string rootPath)
@@ -375,7 +384,11 @@ namespace ExcelExportTool
         /// 删除翻译表
         /// </summary>
         /// <param name="rootPath"></param>
-        public static void DelTranslate(string rootPath) {
+        public static bool DelTranslate(string rootPath) {
+            if (!Directory.Exists(rootPath)) {
+                Form1.ShowTips("不存在"+rootPath+"此目录");
+                return false;
+            }
             pathTransLists.Clear();
             TraverseTranslateFile(rootPath);
             foreach (var i in pathTransLists)
@@ -385,6 +398,7 @@ namespace ExcelExportTool
                     File.Delete(i);
                 }
             }
+            return true;
         }
     }
 }
