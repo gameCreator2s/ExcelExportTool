@@ -36,7 +36,6 @@ namespace ExcelExportTool
             label1.Size = new Size(500, 20);
             
             label1.Text = "请选择要用于生成翻译表的原excel表所在目录";
-
             this.Controls.Add(label1);
 
             //1
@@ -190,11 +189,12 @@ namespace ExcelExportTool
             Button btn_lua = new Button();
             btn_lua.Location = new Point(530, 430);
             btn_lua.Size = new Size(130, 20);
-            btn_lua.Text = "选择语言配置路径";
+            btn_lua.Text = "选择路径";
             this.Controls.Add(btn_lua);
             btn_lua.Click += btn_lua_Click;
 
                 //static string url_lua_tb_name = Application.dataPath + "/StreamingAssets/Local/Lua/app/config/lua_tb_field.lua";
+
             
         }
 
@@ -314,8 +314,6 @@ namespace ExcelExportTool
             }
         }
 
-
-
         /// <summary>
         /// 删除translate
         /// </summary>
@@ -415,10 +413,6 @@ namespace ExcelExportTool
 
             
         }
-
-
-
-
 
         public static void ShowTips(string content) {
             MessageBox.Show(

@@ -22,8 +22,10 @@ namespace ExcelExportTool
         static List<double> translateIdList = new List<double>();
         static List<double> translate2AddIdList = new List<double>();
         static List<double> translate2DelIdList = new List<double>();
+
         static bool canExportLua=false;
         static Dictionary<string, List<string>> tbAndFieldName = new Dictionary<string, List<string>>();
+
         //static List<string> originIdList = new List<string>();
         //static List<string> translateIdList = new List<string>();
         //static List<string> translate2AddIdList = new List<string>();
@@ -76,8 +78,7 @@ namespace ExcelExportTool
                 excelFile = new FileInfo(pathLists[i]);
                 if (!excelFile.Exists)
                     continue;
-                
-
+      
                 //record the col num which to be exported;be sure the first value is id
                 List<int> collist = new List<int>();
                 using (ExcelPackage package = new ExcelPackage(excelFile))//每一个原excel
@@ -90,7 +91,7 @@ namespace ExcelExportTool
                     int rowStart = worksheet.Dimension.Start.Row;       //工作区开始行号
                     int rowEnd = worksheet.Dimension.End.Row;       //工作区结束行号
 
-                    
+
                     int workRow = 2;//默认工作行
                     for (int row = rowStart; row <= 5; row++)
                     {//给5因为有些表的字段名下面还加了些描述等中文字符，故多遍历几次，以保证进入正文
@@ -281,8 +282,6 @@ namespace ExcelExportTool
                                 {
                                     //将原表里的内容加入
                                     worksheet2.Cells[rowindex, curTranslateCol].Value = worksheet.Cells[rowindex, collist[colindex]].Value;
-                                   
-
                                     //根据翻译类型添加翻译字段
                                     //id不需要翻译
                                     if (colindex != 0)
