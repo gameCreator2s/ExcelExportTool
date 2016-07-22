@@ -35,7 +35,6 @@ namespace ExcelExportTool
         //static List<string> translate2AddIdList = new List<string>();
         //static List<string> translate2DelIdList = new List<string>();
 
-
         public static bool Export(string rootPath,string luaExportPath=null, string[] transTypeList = null,string filterPath=null)
         {
             if (!Directory.Exists(rootPath)) {
@@ -70,30 +69,31 @@ namespace ExcelExportTool
                 //excel origin table
                 excelFile = new FileInfo(pathLists[i]);
                 if (!excelFile.Exists)
-                    continue;
-                
+                    continue;      
 
                 //record the col num which to be exported;be sure the first value is id
                 List<int> collist = new List<int>();
                 //record the col name which to be exported;
                 originColNameList.Clear();
+
                 using (ExcelPackage package = new ExcelPackage(excelFile))//每一个原excel
                 {
                     //the first sheet
                     ExcelWorksheet worksheet = package.Workbook.Worksheets[1];
                     //从有内容的行列开始
+
                     int colStart = worksheet.Dimension.Start.Column;  //工作区开始列
                     int colEnd = worksheet.Dimension.End.Column;       //工作区结束列
                     int rowStart = worksheet.Dimension.Start.Row;       //工作区开始行号
                     int rowEnd = worksheet.Dimension.End.Row;       //工作区结束行号
 
-                    
                     int workRow = 2;//默认工作行
                     for (int row = rowStart; row <= 5; row++)
                     {//给5因为有些表的字段名下面还加了些描述等中文字符，故多遍历几次，以保证进入正文
                         for (int col = colStart; col <= colEnd; col++)
                         {
                             string text = worksheet.Cells[row, col].Text;
+
                             if (text == "id" || text == "ID"||text.ToLower()=="id")
                             {
                                 if (!collist.Contains(col))
@@ -152,7 +152,9 @@ namespace ExcelExportTool
                         //newFile.Delete();
                         using (ExcelPackage package2 = new ExcelPackage(newFile))//每一个translate excel
                         {
+
                             //**********:for the order of  add/del of the origin excel：firstly add/del row(record),then add/del col(field)
+
 
                             ExcelWorksheet workshee2 = package2.Workbook.Worksheets[1];
                             int transColStart;
@@ -206,6 +208,7 @@ namespace ExcelExportTool
 
                             //----------------------对translate 表row进行删改
 
+
                             //string transId = "";
                             double transId;
                             //删除
@@ -234,6 +237,7 @@ namespace ExcelExportTool
 
                             }
                             //row添加
+
                             int curTranslateCol = 1;
                             //string originId = "";
                             double originId;
@@ -394,9 +398,6 @@ namespace ExcelExportTool
                                     }
                                 }
                             }
-
-
-
                             package2.Save();
                         }
                     }
@@ -413,8 +414,7 @@ namespace ExcelExportTool
                                 {
                                     //将原表里的内容加入
                                     worksheet2.Cells[rowindex, curTranslateCol].Value = worksheet.Cells[rowindex, collist[colindex]].Value;
-                                   
-
+<
                                     //根据翻译类型添加翻译字段
                                     //id不需要翻译
                                     if (colindex != 0)

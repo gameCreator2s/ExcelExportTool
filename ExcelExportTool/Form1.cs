@@ -43,7 +43,8 @@ namespace ExcelExportTool
             TextBox txtbox = new TextBox();
             txtbox.Location = new Point(24, 25);
             txtbox.Size = new Size(500, 20);
-            txtbox.Text = @"E:\zzhx\trunk\data\ai";
+
+            txtbox.Text = @"E:\zzhx\trunk\data";
             this.Controls.Add(txtbox);
 
             //2
@@ -314,8 +315,6 @@ namespace ExcelExportTool
             }
         }
 
-
-
         /// <summary>
         /// 删除translate
         /// </summary>
@@ -415,10 +414,6 @@ namespace ExcelExportTool
 
             
         }
-
-
-
-
 
         public static void ShowTips(string content) {
             MessageBox.Show(
