@@ -1,0 +1,1 @@
+ren test.gitignore .gitignore
