@@ -1,6 +1,10 @@
 注意事项:
+<<<<<<< HEAD
 1.文件id一定要是十进制的数字
 ,字段名不可以重复
+=======
+1.文件id一定要是十进制的数字,字段名不可以重复
+>>>>>>> f766266423bf0a583008d31330c4e7c672a5dde0
 2.将所有可能的语言类型预留，不要后期加字段
 
 3.表的格式可以参照tb_table_build.xlsx和tb_table_level_list.xlsx，其他格式的excel可能会解析出错
@@ -13,5 +17,9 @@
 
 6.使用运行时参数时，不可选择language表的路径，默认在.exe文件所在目录里，
 如E:\zzhx\trunk\client\Tool\ExcelExportTool-master\ExcelExportTool\bin\Release
+<<<<<<< HEAD
 需要添加翻译类型时，请找到该路径里的language.xml文件将语言类型添加进去。
 7.修改了翻译类型表language.xml之后，一定要记得刷新，不然不会应用最新的修改
+=======
+需要添加翻译类型时，请找到该路径里的language.xml文件将语言类型添加进去。
+>>>>>>> f766266423bf0a583008d31330c4e7c672a5dde0

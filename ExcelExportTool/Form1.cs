@@ -194,7 +194,6 @@ namespace ExcelExportTool
             this.Controls.Add(btn_lua);
             btn_lua.Click += btn_lua_Click;
 
-
             //18
             Button btn_refresh_lan = new Button();
             btn_refresh_lan.Location = new Point(660, 380);
@@ -330,8 +329,6 @@ namespace ExcelExportTool
                 ShowTips("导出完成");
             }
         }
-
-
 
         /// <summary>
         /// 删除translate

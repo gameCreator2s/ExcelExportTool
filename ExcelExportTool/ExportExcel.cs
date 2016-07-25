@@ -44,7 +44,6 @@ namespace ExcelExportTool
         //static List<string> translate2AddIdList = new List<string>();
         //static List<string> translate2DelIdList = new List<string>();
 
-
         public static bool Export(string rootPath,string luaExportPath=null, string[] transTypeList = null,string filterPath=null)
         {
             if (!Directory.Exists(rootPath)) {
@@ -99,7 +98,6 @@ namespace ExcelExportTool
                     int rowStart = worksheet.Dimension.Start.Row;       //工作区开始行号
                     int rowEnd = worksheet.Dimension.End.Row;       //工作区结束行号
 
-                    
                     int workRow = 2;//默认工作行
                     for (int row = rowStart; row <= 5; row++)
                     {//给5因为有些表的字段名下面还加了些描述等中文字符，故多遍历几次，以保证进入正文
@@ -158,7 +156,6 @@ namespace ExcelExportTool
                     string pathTranslate = pathLists[i];
                     pathTranslate = pathTranslate.Substring(0, pathTranslate.Length - 5);//.xlsx
                     pathTranslate += "_translate.xlsx";
-
                     string dir = pathTranslate.Substring(0, pathTranslate.LastIndexOf("\\"));
                     string transfilename = pathTranslate.Substring(pathTranslate.LastIndexOf("\\"));//.xlsx
                     transfilename = transfilename.Substring(0, transfilename.LastIndexOf("."));
@@ -292,7 +289,6 @@ namespace ExcelExportTool
                                     }
                                 }
                             }
-
 
                             //-----------------------------------------========================================华丽的 split line, the second step
                             //翻译类型的增删,这一阶段要抹掉ORIGINIDENTITY，防止后面的field处理会全部重新生成field，且要将与现在的翻译类型不匹配的所有field的增改做完
@@ -473,7 +469,6 @@ namespace ExcelExportTool
                                     }
                                 }
                             }
-
                             //比对origin 有 而translate无的
                             for (int index = 0; index < originColNameList.Count; index++)
                             {
@@ -564,7 +559,6 @@ namespace ExcelExportTool
                                     }
                                 }
                             }
-
                             //add back _toTrans
                             transColStart = workshee2.Dimension.Start.Column;
                             transColEnd = workshee2.Dimension.End.Column;
