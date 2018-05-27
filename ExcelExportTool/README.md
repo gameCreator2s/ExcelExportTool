@@ -1,10 +1,13 @@
 # ExcelExportTool
 used to export fixed format excel file's translation table
 
-×¢ÒâÊÂÏî:
-1.ÎÄ¼þidÒ»¶¨ÒªÊÇÊ®½øÖÆµÄÊý×Ö
-2.½«ËùÓÐ¿ÉÄÜµÄÓïÑÔÀàÐÍÔ¤Áô£¬²»ÒªºóÆÚ¼Ó×Ö¶Î
-3.±íµÄ¸ñÊ½¿ÉÒÔ²ÎÕÕtb_table_build.xlsxºÍtb_table_level_list.xlsx£¬ÆäËû¸ñÊ½µÄexcel¿ÉÄÜ»á½âÎö³ö´í
+×¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½:
+1.ï¿½Ä¼ï¿½idÒ»ï¿½ï¿½Òªï¿½ï¿½Ê®ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½
+2.ï¿½ï¿½ï¿½ï¿½ï¿½Ð¿ï¿½ï¿½Üµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¤ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½Ú¼ï¿½ï¿½Ö¶ï¿½
+3.ï¿½ï¿½Ä¸ï¿½Ê½ï¿½ï¿½ï¿½Ô²ï¿½ï¿½ï¿½tb_table_build.xlsxï¿½ï¿½tb_table_level_list.xlsxï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê½ï¿½ï¿½excelï¿½ï¿½ï¿½Ü»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 with the epplus
+
+æ·»åŠ å¯è¯†åˆ«.xlsmæ–‡ä»¶
+æ·»åŠ å¯¼å‡ºä¸€å¼ è¡¨é‡Œå¤šä¸ªsheetåŠŸèƒ½
 
