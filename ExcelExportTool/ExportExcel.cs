@@ -539,6 +539,16 @@ namespace ExcelExportTool
                                     }
                                 }
 
+                                //增删列之后  翻译表剩下的列名
+                                //foreach (string name in translate2DelColNameList) {
+                                //    if (translateColNameList.Contains(name)) {
+                                //        translateColNameList.Remove(name);
+                                //    }
+                                //}
+                                //translateColNameList.AddRange(translate2AddColNameList);
+                                //foreach (string name in translateColNameList) {
+                                //    Form1.ShowTips("translateColNameList:" + name);
+                                //}
                                 //----------------------对translate 表col进行删改
                                 //col 删
                                 //string colname = "";
@@ -625,12 +635,52 @@ namespace ExcelExportTool
                                     if (colname.ToLower() != "id" && !nowTransTypeList.Contains(postfix))
                                     {
                                         string str = workshee2.Cells[rowStart, col].Value as string;
-                                        if (str.EndsWith(ORIGINIDENTITY))
+                                        
+                                        if (str.EndsWith(ORIGINIDENTITY)) {
                                             continue;
+                                        }
                                         workshee2.Cells[rowStart, col].Value = colname + ORIGINIDENTITY;
                                     }
                                 }
+                                
 
+                                //存在不增删原表的行列，只修改行列里面的原数据的情况，故每次导出，直接用原表当前的内容覆盖翻译表的
+                                //对应翻译字段那列的内容（即标记了_toTrans)的字段
+                                //翻译表需要翻译的原字段名：列号映射
+                                Dictionary<string, int> name2Col = new Dictionary<string, int>();
+                                for (int col = transColStart; col <= transColEnd; col++)
+                                {
+                                    if (workshee2.Cells[transRowStart, col].Value == null)
+                                        continue;
+                                    colname = workshee2.Cells[rowStart, col].Value as string;
+                                    string postfix = GetPostfixName(colname);
+                                    if (colname.ToLower() != "id" && !nowTransTypeList.Contains(postfix))
+                                    {
+                                        string str = workshee2.Cells[rowStart, col].Value as string;
+
+                                        if (str.EndsWith(ORIGINIDENTITY))
+                                        {
+                                            name2Col.Add(GetPrefixName(str), col);
+                                            continue;
+                                        }
+                                    }
+                                }
+
+                                //foreach(KeyValuePair<string,int> t in name2Col){
+                                //    Form1.ShowTips(t.Key.ToString() + " " + t.Value.ToString());
+                                //}
+
+                                foreach (int index in collist) {
+                                    //从字段名的下一行开始，用原表内容覆盖翻译表内容
+                                    string name = worksheet.Cells[1, index].Value as string;
+                                    if (name2Col.ContainsKey(name)) {
+                                        int transCol = name2Col[name];
+                                        for (int row = 2; row <= rowEnd; row++)
+                                        {
+                                            workshee2.Cells[row, transCol].Value = worksheet.Cells[row, index].Value;
+                                        }
+                                    }
+                                }
                                 package2.Save();
                             }
                         }
@@ -872,6 +922,20 @@ namespace ExcelExportTool
             else
             {
                 return str.Substring(index + 1);
+            }
+
+        }
+
+        public static string GetPrefixName(string str)
+        {
+            int index = str.LastIndexOf("_");
+            if (index < 0)
+            {
+                return null;
+            }
+            else
+            {
+                return str.Substring(0,index);
             }
 
         }
