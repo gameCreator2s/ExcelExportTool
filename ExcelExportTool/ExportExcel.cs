@@ -103,6 +103,10 @@ namespace ExcelExportTool
                             continue;
                         }
                         string sheetName = worksheet.Name;
+                        //空表不处理。
+                        if (worksheet.Dimension == null) {
+                            continue;
+                        }
                         //从有内容的行列开始
                         int colStart = worksheet.Dimension.Start.Column;  //工作区开始列
                         int colEnd = worksheet.Dimension.End.Column;       //工作区结束列
@@ -132,6 +136,7 @@ namespace ExcelExportTool
                                     break;
                                 }
                                 MatchCollection mc = Regex.Matches(text, pattern, RegexOptions.IgnoreCase);
+                                //找到需要翻译的列
                                 if (mc.Count > 0)
                                 {
                                     if (!collist.Contains(col))
@@ -164,6 +169,11 @@ namespace ExcelExportTool
                                 }
                             }
                         }
+                        //只有id列，不用导出
+                        if (collist.Count <= 1) {
+                            continue;
+                        }
+
                         //记录下原表里所有需要翻译的字段的名字
                         foreach (int col in collist)
                         {
@@ -638,7 +648,7 @@ namespace ExcelExportTool
                                         //将原表里的内容加入
                                         object str = worksheet.Cells[rowindex, collist[colindex]].Value;
                                         //有些字段可能有附加描述列，不填则为空
-                                        if (rowindex == rowStart && str.ToString().ToLower() != "id")
+                                        if (str!=null&& rowindex == rowStart && str.ToString().ToLower() != "id")
                                         { //field name need to add "_toTrans"
                                             str = str + ORIGINIDENTITY;
                                         }
