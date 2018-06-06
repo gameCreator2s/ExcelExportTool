@@ -137,9 +137,10 @@ namespace ExcelExportTool
                                         }
                                         break;
                                     }
-                                    if (text.Trim().ToLower() == "str") {
-                                        theRightColList.Add(col);
-                                    }
+                                    //不能用str限制,存在填arr的数组情况
+                                    //if (text.Trim().ToLower() == "str") {
+                                    //    theRightColList.Add(col);
+                                    //}
                                     //记录正文开始行
                                     if (text.Contains("删"))
                                     {
@@ -149,7 +150,7 @@ namespace ExcelExportTool
                                     }
                                     MatchCollection mc = Regex.Matches(text, pattern, RegexOptions.IgnoreCase);
                                     //找到需要翻译的列
-                                    if (theRightColList.Contains(col) &&mc.Count > 0)// && workRow > 2防止乱填无字段内容
+                                    if (workRow > 2 && mc.Count > 0)// && theRightColList.Contains(col)防止乱填无字段内容
                                     {
                                         if (!collist.Contains(col))
                                         {
@@ -253,10 +254,11 @@ namespace ExcelExportTool
                                     }
                                     //translation excel maybe 对不上 origin excel's col 编号  so origin and translation excel should
                                     //use own row/col data
+                                    transRowStart = 2;//workRow;
                                     transRowEnd = workshee2.Dimension.End.Row;
                                     transColStart = workshee2.Dimension.Start.Column;
                                     transColEnd = workshee2.Dimension.End.Column;
-                                    for (int row = workRow; row <= transRowEnd; row++)
+                                    for (int row = transRowStart; row <= transRowEnd; row++)
                                     {
                                         if (workshee2.Cells[row, transColStart].Value != null)
                                         {
@@ -291,7 +293,7 @@ namespace ExcelExportTool
                                     {
                                         transColStart = workshee2.Dimension.Start.Column;
                                         transColEnd = workshee2.Dimension.End.Column;
-                                        transRowStart = workRow;
+                                        transRowStart = 2;//workRow;
                                         transRowEnd = workshee2.Dimension.End.Row;
                                         for (int row = transRowStart; row <= transRowEnd; row++)
                                         {
@@ -319,23 +321,24 @@ namespace ExcelExportTool
                                     {
                                         transColStart = workshee2.Dimension.Start.Column;
                                         transColEnd = workshee2.Dimension.End.Column;
-                                        transRowStart = workRow;
+                                        transRowStart = 2;// workRow;
                                         transRowEnd = workshee2.Dimension.End.Row;
 
                                         for (int row = workRow; row <= rowEnd; row++)
                                         {//原表中的新数据所在行
                                             if (worksheet.Cells[row, collist[0]].Value == null)
                                                 continue;
+                                            int transRow = row - 3;
                                             //originId = worksheet.Cells[row, collist[0]].Value.ToString();
                                             originId = (double)worksheet.Cells[row, collist[0]].Value;
                                             if (translate2AddIdList.Contains(originId))
                                             {//找到原表中的新增数据
-                                                workshee2.InsertRow(row, 1);
+                                                workshee2.InsertRow(transRow, 1);
 
                                                 for (int colindex = 0; colindex < collist.Count; colindex++)
                                                 {
                                                     //将原表里的内容加入
-                                                    workshee2.Cells[row, curTranslateCol].Value = worksheet.Cells[row, collist[colindex]].Value;
+                                                    workshee2.Cells[transRow, curTranslateCol].Value = worksheet.Cells[row, collist[colindex]].Value;
                                                     if (colindex == 0)
                                                     {
                                                         curTranslateCol++;
@@ -458,7 +461,7 @@ namespace ExcelExportTool
                                                     workshee2.InsertColumn(col + 1, 1);
 
                                                     workshee2.Cells[transRowStart, col + 1].Value = colname + "_" + translate2AddTransNameList[s];
-                                                    workshee2.Cells[transRowStart + 1, col + 1].Value = colname + "_" + translate2AddTransNameList[s];
+                                                    //workshee2.Cells[transRowStart + 1, col + 1].Value = colname + "_" + translate2AddTransNameList[s];
                                                 }
 
                                                 //判断此列之后没有要插入新翻译列的列了
@@ -694,7 +697,7 @@ namespace ExcelExportTool
                                             int transCol = name2Col[name];
                                             for (int row = 2; row <= rowEnd; row++)
                                             {
-                                                workshee2.Cells[row, transCol].Value = worksheet.Cells[row, index].Value;
+                                                workshee2.Cells[row, transCol].Value = worksheet.Cells[row+3, index].Value;
                                             }
                                         }
                                     }
@@ -713,14 +716,21 @@ namespace ExcelExportTool
                                     {
                                         for (int rowindex = rowStart; rowindex <= rowEnd; rowindex++)
                                         {
+                                            if (rowindex == 2 || rowindex == 3 || rowindex == 4) {
+                                                continue;
+                                            }
+                                            int curRow =rowindex;
+                                            if (rowindex > 4) {
+                                                curRow =curRow - 3;
+                                            }
                                             //将原表里的内容加入
                                             object str = worksheet.Cells[rowindex, collist[colindex]].Value;
                                             //有些字段可能有附加描述列，不填则为空
-                                            if (str != null && rowindex == rowStart && str.ToString().ToLower() != "id")
+                                            if (str != null && curRow == rowStart && str.ToString().ToLower() != "id")
                                             { //field name need to add "_toTrans"
                                                 str = str + ORIGINIDENTITY;
                                             }
-                                            worksheet2.Cells[rowindex, curTranslateCol].Value = str;
+                                            worksheet2.Cells[curRow, curTranslateCol].Value = str;
 
 
                                             //根据翻译类型添加翻译字段
@@ -729,9 +739,9 @@ namespace ExcelExportTool
                                             {
                                                 for (int k = 0; k < transTypeList.Length; k++)
                                                 {
-                                                    if (rowindex < workRow)
+                                                    if (curRow ==1)//curRow < workRow
                                                     {
-                                                        worksheet2.Cells[rowindex, curTranslateCol + 1 + k].Value = worksheet.Cells[rowindex, collist[colindex]].Value + "_" + transTypeList[k];
+                                                        worksheet2.Cells[curRow, curTranslateCol + 1 + k].Value = worksheet.Cells[rowindex, collist[colindex]].Value + "_" + transTypeList[k];
                                                     }
                                                     else
                                                     {
