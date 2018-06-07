@@ -120,7 +120,7 @@ namespace ExcelExportTool
                             int rowStart = worksheet.Dimension.Start.Row;       //工作区开始行号
                             int rowEnd = worksheet.Dimension.End.Row;       //工作区结束行号
 
-                            int workRow = 2;//默认工作行
+                            int workRow = 5;//默认工作行
                             //bool isRightCol = false;//是否是正规的需要导出的翻译列
                             List<int> theRightColList = new List<int>();//正规的可能需要导出的列的编号列表
                             //记录每张表的翻译字段
@@ -129,28 +129,37 @@ namespace ExcelExportTool
                                 for (int col = colStart; col <= colEnd; col++)
                                 {
                                     string text = worksheet.Cells[row, col].Text;
+                                    if (row == 1 && !string.IsNullOrEmpty(text))
+                                    {
+                                        if (!theRightColList.Contains(col))
+                                        {
+                                            theRightColList.Add(col);
+                                        }
+                                    }
                                     if (text == "id" || text == "ID" || text.ToLower() == "id")
                                     {
                                         if (!collist.Contains(col))
                                         {
                                             collist.Add(col);
                                         }
-                                        break;
+                                        //break;
                                     }
                                     //不能用str限制,存在填arr的数组情况
                                     //if (text.Trim().ToLower() == "str") {
                                     //    theRightColList.Add(col);
                                     //}
+                                    
                                     //记录正文开始行
-                                    if (text.Contains("删"))
+                                    if (text.Contains("删") && workRow != 2)//&&
                                     {
                                         //删所在行的下一行为正文开始行
-                                        workRow = row + 1;
+                                        //workRow = row + 1;
+                                        workRow = 5;
                                         break;
                                     }
                                     MatchCollection mc = Regex.Matches(text, pattern, RegexOptions.IgnoreCase);
                                     //找到需要翻译的列
-                                    if (workRow > 2 && mc.Count > 0)// && theRightColList.Contains(col)防止乱填无字段内容
+                                    if (workRow > 2 && mc.Count > 0 && theRightColList.Contains(col))// 防止乱填无字段内容
                                     {
                                         if (!collist.Contains(col))
                                         {
@@ -622,12 +631,12 @@ namespace ExcelExportTool
                                                     newColName = colname + "_" + transTypeList[s];
 
                                                     workshee2.Cells[curTranslateRow, insertCol].Value = newColName;
-                                                    workshee2.Cells[curTranslateRow + 1, insertCol].Value = worksheet.Cells[rowStart + 1, col].Value;
+                                                    workshee2.Cells[curTranslateRow + 1, insertCol].Value = worksheet.Cells[rowStart, col].Value;
                                                 }
                                                 //the origin content
                                                 workshee2.InsertColumn(insertCol, 1);
                                                 workshee2.Cells[curTranslateRow, insertCol].Value = colname + ORIGINIDENTITY;
-                                                workshee2.Cells[curTranslateRow + 1, insertCol].Value = worksheet.Cells[rowStart + 1, col].Value;
+                                                workshee2.Cells[curTranslateRow + 1, insertCol].Value = worksheet.Cells[rowStart , col].Value;
                                                 curTranslateRow = 3;//standard format:the third row is the start row of work content
                                                 for (int s = curTranslateRow; s <= transRowEnd; s++)
                                                 {
