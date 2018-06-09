@@ -271,7 +271,15 @@ namespace ExcelExportTool
                                     {
                                         if (workshee2.Cells[row, transColStart].Value != null)
                                         {
-                                            translateIdList.Add((double)workshee2.Cells[row, transColStart].Value);
+                                            double temp = 0;
+                                            if (Double.TryParse(workshee2.Cells[row, transColStart].Value.ToString().ToString(), out temp))
+                                            {
+                                                translateIdList.Add(temp);
+                                            }
+                                            else { 
+                                                Form1.ShowTips("翻译表"+sheetName+""+string.Format("第{0}行，第{1}列内容有问题，不可转为double",row,transColStart));
+                                                break;
+                                            }
                                             //translateIdList.Add(workshee2.Cells[row, collist[0]].Value.ToString());
                                         }
                                     }
