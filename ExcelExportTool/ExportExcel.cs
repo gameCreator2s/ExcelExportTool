@@ -90,7 +90,7 @@ namespace ExcelExportTool
                     if (!excelFile.Exists)
                         continue;
 
-                    //record the col num which to be exported;be sure the first value is id
+                    ///record the col num which to be exported;be sure the first value is id
                     List<int> collist = new List<int>();
                     
                     using (ExcelPackage package = new ExcelPackage(excelFile))//每一个原excel
@@ -342,7 +342,10 @@ namespace ExcelExportTool
                                         transRowEnd = workshee2.Dimension.End.Row;
 
                                         for (int row = workRow; row <= rowEnd; row++)
-                                        {//原表中的新数据所在行
+                                        {
+                                            //翻译表每行数据的填入都要重新从第一列开始
+                                            curTranslateCol = 1;
+                                            //原表中的新数据所在行
                                             if (worksheet.Cells[row, collist[0]].Value == null)
                                                 continue;
                                             int transRow = row - 3;
@@ -356,6 +359,7 @@ namespace ExcelExportTool
                                                 {
                                                     //将原表里的内容加入
                                                     workshee2.Cells[transRow, curTranslateCol].Value = worksheet.Cells[row, collist[colindex]].Value;
+                                                    //id的下一列或者间隔翻译类型种类的列数
                                                     if (colindex == 0)
                                                     {
                                                         curTranslateCol++;
